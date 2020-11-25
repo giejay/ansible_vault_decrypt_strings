@@ -26,10 +26,10 @@ something:
 
 ```
 encryptfile(){
-python3 decrypted.yml vault.yml optionalpathtopwfile
+python3 /Users/user/IdeaProjects/ansible_vault_decrypt_strings/decrypt.py decrypted.yml vault.yml [optionalpathtopwfile]
 }
 
 decryptfile(){
-python3 vault.yml decrypted.yml optionalpathtopwfile
+python3 /Users/user/IdeaProjects/ansible_vault_decrypt_strings/decrypt.py vault.yml decrypted.yml [optionalpathtopwfile]
 }
 ```
