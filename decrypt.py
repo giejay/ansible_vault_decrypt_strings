@@ -1,23 +1,24 @@
 import sys
 
-from ansible.parsing.vault import PromptVaultSecret, VaultLib, VaultSecret, AnsibleVaultError
+from ansible.parsing.vault import VaultLib, VaultSecret, PromptVaultSecret, AnsibleVaultError
 from ruamel.yaml import YAML
-import ansible
-from pprint import pprint
 
-if len(sys.argv) != 4:
-    print("Supply <password_file> <input_yaml> <output_yaml>")
+if len(sys.argv) < 3:
+    print("Supply <input_yaml> <output_yaml> Optional(<password_file>)")
     sys.exit(1)
 
-try: 
-    with open(sys.argv[1], "rb") as pw_file:
-        pw = pw_file.read()
-except FileNotFoundError:
-    print("Password file not found")
-    sys.exit(1)
-
-vault_pw = VaultSecret(pw)
-vault_pw.load()
+if len(sys.argv) == 4:
+    try:
+        with open(sys.argv[3], "rb") as pw_file:
+            pw = pw_file.read()
+            vault_pw = VaultSecret(pw)
+            vault_pw.load()
+    except FileNotFoundError:
+        print("Password file not found")
+        sys.exit(1)
+else:
+    vault_pw = PromptVaultSecret(prompt_formats=["password: "])
+    vault_pw.load()
 
 vl = VaultLib(secrets=[
     (None, vault_pw)
@@ -37,9 +38,8 @@ yaml = YAML()
 yaml.indent(mapping=2, sequence=4, offset=2)
 yaml.register_class(VaultSecret)
 
-
 try:
-    with open(sys.argv[2], 'r') as orig:
+    with open(sys.argv[1], 'r') as orig:
         try:
             y = yaml.load(orig)
         except AnsibleVaultError as e:
@@ -49,5 +49,5 @@ try:
 except FileExistsError:
     print(f"Failed to open {sys.argv[2]}")
 
-with open(sys.argv[3], 'w') as dest:
+with open(sys.argv[2], 'w') as dest:
     yaml.dump(y, dest)

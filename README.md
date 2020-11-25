@@ -14,10 +14,22 @@ something:
 
 ```
 
-## Save your password to a file
-
-`echo -n hunter2 > vault_secret` be sure to add the `-n` so that you don't write a newline
-
 ## Decrypt the fields in your yaml file
 
-`python main.py vault_secret in.yaml out.yaml`
+`python decrypt.py vault.yaml decrypted.yaml`
+
+## Encrypt it again
+
+`python3 encrypt.py decrypted.yml vault.yml`
+
+## Add it to your bash profile for convenience
+
+```
+encryptfile(){
+python3 decrypted.yml vault.yml optionalpathtopwfile
+}
+
+decryptfile(){
+python3 vault.yml decrypted.yml optionalpathtopwfile
+}
+```
